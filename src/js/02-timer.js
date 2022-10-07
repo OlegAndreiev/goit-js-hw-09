@@ -20,7 +20,6 @@ for (let i = 0; i < listItems.length; i += 1) {
   element.style.flexDirection = 'column';
   element.style.alignItems = 'center';
   element.style.fontSize = '20px';
-  console.log(element);
 }
 
 for (let i = 0; i < spanValue.length; i++) {
@@ -28,34 +27,32 @@ for (let i = 0; i < spanValue.length; i++) {
   element.style.fontSize = '50px';
 }
 
-startBtn.disabled = true;
+startBtn.setAttribute('disabled', true);
 
 const options = {
+  noCalendar: false,
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
+
   onClose(selectedDates) {
-    startBtn.disabled = false;
-    startBtn.addEventListener('click', timer);
-
-    // console.log(datesDifference);
-    // convertMs(datesDifference);
-
+    startBtn.removeAttribute('disabled');
+    startBtn.addEventListener('click', timerStart);
+    clearInterval(options.intervalId);
     if (selectedDates[0] < options.defaultDate) {
       Notify.failure('Please choose a date in the future');
-      startBtn.disabled = true;
+      startBtn.setAttribute('disabled', true);
     }
 
-    function timer() {
+    function timerStart() {
+      startBtn.setAttribute('disabled', true);
       const intervalId = setInterval(() => {
         const currentDate = new Date();
         const datesDifference = selectedDates[0] - currentDate;
         const convertedData = convertMs(datesDifference);
-        console.log(convertedData);
-        // console.log(convertMs(datesDifference));
-        // console.log(convertedData.seconds);
         setTimerData(convertedData);
+        flatpickrInit.disabled = true;
       }, 1000);
     }
   },
