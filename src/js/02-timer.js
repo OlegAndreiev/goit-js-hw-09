@@ -10,6 +10,7 @@ const timerDataMinutes = document.querySelector('span[data-minutes]');
 const timerDataSeconds = document.querySelector('span[data-seconds]');
 const divTimer = document.querySelector('.timer');
 const spanValue = document.querySelectorAll('.value');
+//------------DECORATION---------------------------
 divTimer.style.display = 'flex';
 divTimer.style.justifyContent = 'space-evenly';
 
@@ -26,6 +27,7 @@ for (let i = 0; i < spanValue.length; i++) {
   const element = spanValue[i];
   element.style.fontSize = '50px';
 }
+// ------------------------------------------------
 
 startBtn.setAttribute('disabled', true);
 
@@ -52,18 +54,19 @@ const options = {
         const datesDifference = selectedDates[0] - currentDate;
         const convertedData = convertMs(datesDifference);
         setTimerData(convertedData);
-        flatpickrInit.disabled = true;
+        flatpickrInit.setAttribute('disabled', true);
       }, 1000);
     }
   },
 };
+flatpickr(flatpickrInit, options);
+
 function setTimerData(convertedData) {
   timerDataDays.textContent = String(convertedData.days).padStart(2, '0');
   timerDataHours.textContent = String(convertedData.hours).padStart(2, '0');
   timerDataMinutes.textContent = String(convertedData.minutes).padStart(2, '0');
   timerDataSeconds.textContent = String(convertedData.seconds).padStart(2, '0');
 }
-flatpickr(flatpickrInit, options);
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
