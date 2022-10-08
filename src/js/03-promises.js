@@ -1,59 +1,47 @@
-// import { Notify } from 'notiflix';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-const startBtn = document.querySelector('button[type="submit"]');
-const formRef = document.querySelector('.form');
-formRef.addEventListener('submit', onFormSubmit);
+const createBtn = document.querySelector('button[type="submit"]');
+const form = document.querySelector('.form');
+form.addEventListener('submit', onSubmit);
 
-function onFormSubmit(evt) {
+function onSubmit(evt) {
   evt.preventDefault();
-  startBtn.setAttribute('disabled', true);
+  createBtn.setAttribute('disabled', true);
+
   const {
     elements: { delay, step, amount },
   } = evt.currentTarget;
-  let delayEl = Number(delay.value);
-  let stepEl = Number(step.value);
-  let amountEl = Number(amount.value);
-  let totalDelay = delayEl + stepEl * amountEl;
+  let delayNum = Number(delay.value);
+  let stepNum = Number(step.value);
+  let amountNum = Number(amount.value);
+  let totalDelay = delayNum + stepNum * amountNum;
 
-  if (delayEl < 0 || stepEl < 0 || amountEl < 0) {
-    Notify.failure('Alert');
+  if (delayNum < 0 || stepNum < 0 || amountNum < 0) {
+    Notify.failure('Alert!!!');
     return;
   }
-  for (let position = 1; position <= amountEl; position += 1) {
-    startBtn.setAttribute('disabled', true);
-    createPromise(position, delayEl)
-      .then(({ position, delay }) =>
-        Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`)
-      )
-      .catch(({ position, delay }) =>
-        Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`)
-      );
 
-    delayEl += stepEl;
+  for (let position = 1; position <= amountNum; position += 1) {
+    delayNum += stepNum;
+    createPromise(position, delayNum);
   }
-  turnOffBtnStart(totalDelay);
-  formRef.reset();
-}
-
-function turnOffBtnStart(total) {
-  setTimeout(() => {
-    startBtn.disabled = false;
-  }, total);
+  showBtn(totalDelay);
 }
 
 function createPromise(position, delay) {
   const shouldResolve = Math.random() > 0.3;
-
-  return new Promise((Resolve, Reject) => {
-    setTimeout(() => {
-      console.log(shouldResolve);
-      if (shouldResolve) {
-        Resolve({ position, delay });
-      } else {
-        Reject({ position, delay });
-      }
-    }, delay);
-  });
+  setTimeout(() => {
+    if (shouldResolve) {
+      Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
+    } else {
+      Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
+    }
+  }, delay);
 }
-console.log(createPromise(5, 1000));
+
+function showBtn(total) {
+  setTimeout(() => {
+    createBtn.disabled = false;
+    form.reset();
+  }, total);
+}
