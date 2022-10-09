@@ -10,25 +10,9 @@ const timerDataMinutes = document.querySelector('span[data-minutes]');
 const timerDataSeconds = document.querySelector('span[data-seconds]');
 const divTimer = document.querySelector('.timer');
 const spanValue = document.querySelectorAll('.value');
-//------------DECORATION---------------------------
-divTimer.style.display = 'flex';
-divTimer.style.justifyContent = 'space-evenly';
+let choosedDates;
 
-const listItems = divTimer.children;
-for (let i = 0; i < listItems.length; i += 1) {
-  const element = listItems[i];
-  element.style.display = 'flex';
-  element.style.flexDirection = 'column';
-  element.style.alignItems = 'center';
-  element.style.fontSize = '20px';
-}
-
-for (let i = 0; i < spanValue.length; i++) {
-  const element = spanValue[i];
-  element.style.fontSize = '50px';
-}
-// ------------------------------------------------
-
+startBtn.addEventListener('click', timerStart);
 startBtn.setAttribute('disabled', true);
 
 const options = {
@@ -39,26 +23,33 @@ const options = {
   minuteIncrement: 1,
 
   onClose(selectedDates) {
-    startBtn.removeAttribute('disabled');
-    startBtn.addEventListener('click', timerStart);
-    clearInterval(options.intervalId);
-    if (selectedDates[0] < options.defaultDate) {
+    if (selectedDates[0] < new Date()) {
       Notify.failure('Please choose a date in the future');
-      startBtn.setAttribute('disabled', true);
-    }
-
-    function timerStart() {
-      startBtn.setAttribute('disabled', true);
-      const intervalId = setInterval(() => {
-        const currentDate = new Date();
-        const datesDifference = selectedDates[0] - currentDate;
-        const convertedData = convertMs(datesDifference);
-        setTimerData(convertedData);
-        flatpickrInit.setAttribute('disabled', true);
-      }, 1000);
+    } else {
+      choosedDates = selectedDates[0];
+      startBtn.disabled = false;
     }
   },
 };
+
+function timerStart() {
+  startBtn.setAttribute('disabled', true);
+  const intervalId = setInterval(() => {
+    const currentDate = new Date();
+    const counterDate = choosedDates - currentDate;
+
+    if (counterDate <= currentDate.getDate()) {
+      clearInterval(intervalId);
+      flatpickrInit.disabled = false;
+      return;
+    }
+
+    const convertedData = convertMs(counterDate);
+    setTimerData(convertedData);
+    flatpickrInit.setAttribute('disabled', true);
+  }, 1000);
+}
+
 flatpickr(flatpickrInit, options);
 
 function setTimerData(convertedData) {
@@ -86,3 +77,22 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+
+//------------DECORATION---------------------------
+divTimer.style.display = 'flex';
+divTimer.style.justifyContent = 'space-evenly';
+
+const listItems = divTimer.children;
+for (let i = 0; i < listItems.length; i += 1) {
+  const element = listItems[i];
+  element.style.display = 'flex';
+  element.style.flexDirection = 'column';
+  element.style.alignItems = 'center';
+  element.style.fontSize = '20px';
+}
+
+for (let i = 0; i < spanValue.length; i++) {
+  const element = spanValue[i];
+  element.style.fontSize = '50px';
+}
+// ------------------------------------------------
